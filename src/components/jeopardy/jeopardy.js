@@ -1,14 +1,32 @@
 import React, { Component } from "react";
 //import our service
 import JeopardyService from "../../jeopardyService";
-import { Route } from "react-router-dom";
+import JeopardyDisplay from "../jeopardyDisplay/JeopardyDisplay";
 class Jeopardy extends Component {
   //set our initial state and set up our service as this.client on this component
   constructor(props) {
     super(props);
     this.client = new JeopardyService();
     this.state = {
-      data: { category: {} },
+      data: {
+        id: null,
+        answer: "",
+        question: "",
+        value: 100,
+        airdate: "",
+        created_at: "",
+        updated_at: "",
+        category_id: null,
+        game_id: null,
+        invalid_count: null,
+        category: {
+          id: null,
+          title: "",
+          created_at: "",
+          updated_at: "",
+          clues_count: null,
+        },
+      },
       score: 0,
       answer: "",
     };
@@ -37,39 +55,31 @@ class Jeopardy extends Component {
     event.preventDefault();
     if (this.state.answer === this.state.data.answer) {
       this.setState({
-        score: this.state.score + parseInt(this.state.data.value),
+        score: this.state.score + parseInt(this.state.data.value || 100),
       });
     } else {
       this.setState({
-        score: this.state.score - parseInt(this.state.data.value),
+        score: this.state.score - parseInt(this.state.data.value || 100),
       });
     }
 
     this.getNewQuestion();
     this.setState({ anwser: "" });
   }
+
   render() {
     console.log(this.state.data.answer);
+
     return (
-      <div>
-        Category: {this.state.data.category.title} <br />
-        Question: {this.state.data.question}
-        <br />
-        <form onSubmit={this.sumbitAnswer}>
-          <label>
-            Your Answer:
-            <input
-              type="text"
-              value={this.state.answer}
-              onChange={this.handleChange}
-            />
-          </label>
-          <input type="submit" value="Submit" />
-        </form>
-        <br />
-        Point Vaule : {this.state.data.value} <br />
-        Score : {this.state.score}
-      </div>
+      <JeopardyDisplay
+        title={this.state.data.category.title}
+        question={this.state.data.question}
+        value={this.state.data.value}
+        score={this.state.score}
+        answer={this.state.anwswer}
+        sumbitAnswerDis={this.sumbitAnswer}
+        handleChangeDis={this.handleChange}
+      />
     );
   }
 }
