@@ -8,36 +8,79 @@ class Jeopardy extends Component {
     super(props);
     this.client = new JeopardyService();
     this.state = {
-      data: {
-        id: null,
-        answer: "",
-        question: "",
-        value: 100,
-        airdate: "",
-        created_at: "",
-        updated_at: "",
-        category_id: null,
-        game_id: null,
-        invalid_count: null,
-        category: {
+      clues: [
+        {
           id: null,
-          title: "",
+          answer: "",
+          question: "",
+          value: 100,
+          airdate: "",
           created_at: "",
           updated_at: "",
-          clues_count: null,
+          category_id: null,
+          game_id: null,
+          invalid_count: null,
+          category: {
+            id: null,
+            title: "",
+            created_at: "",
+            updated_at: "",
+            clues_count: null,
+          },
         },
-      },
+        {
+          id: null,
+          answer: "",
+          question: "",
+          value: 100,
+          airdate: "",
+          created_at: "",
+          updated_at: "",
+          category_id: null,
+          game_id: null,
+          invalid_count: null,
+          category: {
+            id: null,
+            title: "",
+            created_at: "",
+            updated_at: "",
+            clues_count: null,
+          },
+        },
+        {
+          id: null,
+          answer: "",
+          question: "",
+          value: 100,
+          airdate: "",
+          created_at: "",
+          updated_at: "",
+          category_id: null,
+          game_id: null,
+          invalid_count: null,
+          category: {
+            id: null,
+            title: "",
+            created_at: "",
+            updated_at: "",
+            clues_count: null,
+          },
+        },
+      ],
       score: 0,
       answer: "",
+      isSelected: false,
+      selectedClue: 0,
     };
     this.sumbitAnswer = this.sumbitAnswer.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.someFunction = this.someFunction.bind(this);
   }
   //get a new random question from the API and add it to the data object in state
   getNewQuestion() {
     return this.client.getQuestion().then((result) => {
       this.setState({
-        data: result.data[0],
+        clues: result.data,
       });
     });
   }
@@ -51,34 +94,63 @@ class Jeopardy extends Component {
     this.setState({ answer: event.target.value });
   }
 
+  someFunction(event) {
+    this.setState({ isSelected: true, selectedClue: event.target.value });
+  }
+
   sumbitAnswer(event) {
     event.preventDefault();
-    if (this.state.answer === this.state.data.answer) {
+    if (
+      this.state.answer ===
+      this.state.clues[parseInt(this.state.selectedClue)].answer
+    ) {
       this.setState({
-        score: this.state.score + parseInt(this.state.data.value || 100),
+        score:
+          this.state.score +
+          parseInt(
+            this.state.clues[parseInt(this.state.selectedClue)].value || 100
+          ),
       });
     } else {
       this.setState({
-        score: this.state.score - parseInt(this.state.data.value || 100),
+        score:
+          this.state.score -
+          parseInt(
+            this.state.clues[parseInt(this.state.selectedClue)].value || 100
+          ),
       });
     }
 
     this.getNewQuestion();
-    this.setState({ anwser: "" });
+    this.setState({ anwser: "", isSelected: false });
   }
 
   render() {
-    console.log(this.state.data.answer);
+    console.log(this.state.clues[parseInt(this.state.selectedClue)].answer);
 
     return (
       <JeopardyDisplay
-        title={this.state.data.category.title}
-        question={this.state.data.question}
-        value={this.state.data.value}
+        title={
+          this.state.clues[parseInt(this.state.selectedClue)].category.title
+        }
+        question={this.state.clues[parseInt(this.state.selectedClue)].question}
+        value={this.state.clues[parseInt(this.state.selectedClue)].value}
         score={this.state.score}
+        clueCategories={[
+          this.state.clues[0].category.title,
+          this.state.clues[1].category.title,
+          this.state.clues[2].category.title,
+        ]}
+        clueValue={[
+          this.state.clues[0].value,
+          this.state.clues[1].value,
+          this.state.clues[2].value,
+        ]}
         answer={this.state.anwswer}
         sumbitAnswerDis={this.sumbitAnswer}
         handleChangeDis={this.handleChange}
+        isSelectedDis={this.state.isSelected}
+        someFunctionDis={this.someFunction}
       />
     );
   }
